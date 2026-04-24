@@ -61,9 +61,9 @@ es-MX:
         setting_default_quote_policy_private: Las publicaciones solo para seguidores hechas en Mastodon no pueden ser citadas por otros usuarios.
         setting_default_quote_policy_unlisted: Cuando las personas te citen, su publicación también se ocultará en las cronologías públicas.
         setting_default_sensitive: El contenido multimedia sensible está oculto por defecto y puede ser mostrado con un clic
-        setting_display_media_default: Ocultar contenido multimedia marcado como sensible
-        setting_display_media_hide_all: Siempre ocultar todo el contenido multimedia
-        setting_display_media_show_all: Mostrar siempre contenido multimedia marcado como sensible
+        setting_display_media_default: Advertir antes de mostrar contenidos marcados como sensibles
+        setting_display_media_hide_all: Advertir antes de mostrar todos los archivos multimedia
+        setting_display_media_show_all: Mostrar todos los archivos multimedia sin advertir, incluidos los marcados como sensibles
         setting_emoji_style: Cómo se muestran los emojis. «Automático» intentará usar emojis nativos, pero vuelve a Twemoji para los navegadores antiguos.
         setting_quick_boosting_html: Cuando está activado, pulsar en el icono %{boost_icon} Impulsar impulsará inmediatamente en lugar de abrir el menú desplegable Impulsar/Citas. Mueve la acción de citar al menú %{options_icon} (Opciones).
         setting_system_scrollbars_ui: Solo se aplica a los navegadores de escritorio basados en Safari y Chrome
@@ -160,6 +160,7 @@ es-MX:
           other: Tenemos que asegurarnos de que tienes al menos %{count} para usar %{domain}. No almacenaremos esta información.
         role: El rol controla qué permisos tiene el usuario.
       user_role:
+        collection_limit: Limita el número de colecciones que puede crear un solo usuario con este rol. Ten en cuenta que, si reduces este número, los usuarios que ya hayan alcanzado este límite no perderán ninguna de sus colecciones, pero no podrán crear otras nuevas.
         color: Color que se usará para el rol en toda la interfaz de usuario, como RGB en formato hexadecimal
         highlighted: Esto hace que el rol sea públicamente visible
         name: Nombre público del rol, si el rol se establece para que se muestre como una insignia
@@ -386,6 +387,7 @@ es-MX:
         role: Rol
         time_zone: Zona horaria
       user_role:
+        collection_limit: Número máximo de colecciones por usuario
         color: Color de insignia
         highlighted: Mostrar rol como insignia en perfiles de usuario
         name: Nombre
