@@ -12,6 +12,7 @@ jobs:
   pathcheck:
     name: Check for relevant changes
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     outputs:
       changed: ${{ steps.filter.outputs.src }}
     steps:
@@ -20,7 +21,7 @@ jobs:
         with:
           fetch-depth: 0
 
-      - uses: dorny/paths-filter@de90cc6fb38fc0963ad72b210f1f284cd68cea36 # v3
+      - uses: dorny/paths-filter@d1c1ffe0248fe513906c8e24db8ea791d46f8590 # v3
         id: filter
         with:
           filters: |
@@ -38,6 +39,7 @@ jobs:
   chromatic:
     name: Run Chromatic
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     needs: pathcheck
     if: github.repository == 'mastodon/mastodon' && needs.pathcheck.outputs.changed == 'true'
     steps:
