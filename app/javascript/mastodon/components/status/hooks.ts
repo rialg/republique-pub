@@ -11,12 +11,16 @@ import { openModal } from '@/mastodon/actions/modal';
 import { toggleStatusSpoilers } from '@/mastodon/actions/statuses';
 import { useExpandedStatus } from '@/mastodon/hooks/useStatus';
 import { useToggle } from '@/mastodon/hooks/useToggle';
-import type { ExpandedStatusShape } from '@/mastodon/models/status';
+import type {
+  ExpandedStatusShape,
+  StatusShape,
+} from '@/mastodon/models/status';
 import { selectStatusFilters } from '@/mastodon/selectors/filters';
 import { useAppSelector, useAppDispatch } from '@/mastodon/store';
 
 import { FOCUS_TARGET } from '../navigation_focus_target';
 
+import { useElementHandledLink } from './handled_link';
 import type { StatusContextType } from './types';
 
 const messages = defineMessages({
@@ -35,11 +39,11 @@ const messages = defineMessages({
 export function useStatusHandlers({
   status,
   contextType,
-  onClick,
+  onOpen,
 }: {
   status?: ExpandedStatusShape;
   contextType?: StatusContextType;
-  onClick?: () => void;
+  onOpen?: () => void;
 }) {
   const matchedFilters = useAppSelector((state) =>
     selectStatusFilters(state, { contextType, statusId: status?.id }),
@@ -91,10 +95,10 @@ export function useStatusHandlers({
   // Navigation handlers
   const history = useHistory();
 
-  const onOpen = useCallback(
+  const onOpenCallback = useCallback(
     (newTab = false) => {
-      if (onClick || !status) {
-        onClick?.();
+      if (onOpen || !status) {
+        onOpen?.();
         return;
       }
 
@@ -108,7 +112,7 @@ export function useStatusHandlers({
         history.push(path, { focusTarget: FOCUS_TARGET.POST });
       }
     },
-    [history, onClick, status],
+    [history, onOpen, status],
   );
 
   const onOpenClick: React.MouseEventHandler = useCallback(
@@ -116,15 +120,15 @@ export function useStatusHandlers({
       event.preventDefault();
 
       if (event.button === 0 && !(event.ctrlKey || event.metaKey)) {
-        onOpen();
+        onOpenCallback();
       } else if (
         event.button === 1 ||
         (event.button === 0 && (event.ctrlKey || event.metaKey))
       ) {
-        onOpen(true);
+        onOpenCallback(true);
       }
     },
-    [onOpen],
+    [onOpenCallback],
   );
 
   const onHeaderClick: React.MouseEventHandler = useCallback(
@@ -188,7 +192,9 @@ export function useStatusHandlers({
       onFilterToggle,
       onHeaderClick,
       onMention,
-      onOpen,
+      onOpen: () => {
+        onOpenCallback();
+      },
       onOpenMedia,
       onOpenProfile,
       onToggleHidden,
@@ -204,7 +210,7 @@ export function useStatusHandlers({
       onFilterToggle,
       onHeaderClick,
       onMention,
-      onOpen,
+      onOpenCallback,
       onOpenClick,
       onOpenMedia,
       onOpenProfile,
@@ -259,4 +265,27 @@ export function useTextForScreenReader({
 
     return values.join(', ');
   }, [intl, isQuote, reblogAcct, status]);
+}
+
+export function useHandlersForStatus(
+  status?: Pick<
+    StatusShape | ExpandedStatusShape,
+    'account' | 'mentions' | 'tagged_collections'
+  > | null,
+) {
+  const hrefToMention = useCallback(
+    (href: string) => status?.mentions.find((item) => item.url === href),
+    [status?.mentions],
+  );
+  const hrefToCollectionId = useCallback(
+    (href: string) =>
+      status?.tagged_collections.find((item) => item.url === href)?.id,
+    [status?.tagged_collections],
+  );
+  return useElementHandledLink({
+    hashtagAccountId:
+      typeof status?.account === 'string' ? status.account : status?.account.id,
+    hrefToCollectionId,
+    hrefToMention,
+  });
 }
