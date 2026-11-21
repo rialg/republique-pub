@@ -8,7 +8,7 @@ import { XIcon } from '@phosphor-icons/react';
 
 import type { PolymorphicProps } from '@/types/polymorphic';
 
-import { IconButton } from '../button/redesign';
+import { IconButton } from '../button';
 import type { NamedFocusTarget } from '../navigation_focus_target';
 import { NavigationFocusTarget } from '../navigation_focus_target';
 
@@ -38,6 +38,7 @@ export const ModalShell = <As extends React.ElementType>({
       className={classNames(
         className,
         classes.modal,
+        maxWidth && classes.modalMaxWidth,
         elevation === 2 && classes.modalElevated,
       )}
       style={{
@@ -102,7 +103,7 @@ export const ModalTitle: React.FC<
   return title;
 };
 
-export const ModalActions = <As extends React.ElementType>({
+export const ModalActions = <As extends React.ElementType = 'div'>({
   align,
   as: asComp,
   children,
@@ -110,7 +111,7 @@ export const ModalActions = <As extends React.ElementType>({
   ...props
 }: PolymorphicProps<
   {
-    align?: 'left' | 'right' | 'stretch';
+    align?: 'left' | 'right' | 'stretch' | 'vertical';
     children?: React.ReactNode;
     className?: string;
   },
@@ -126,6 +127,7 @@ export const ModalActions = <As extends React.ElementType>({
         classes.actions,
         align === 'left' && classes.actionsLeft,
         align === 'right' && classes.actionsRight,
+        align === 'vertical' && classes.actionsVertical,
       )}
     >
       {children}

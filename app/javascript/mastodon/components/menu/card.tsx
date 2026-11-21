@@ -1,9 +1,15 @@
+import { useLayoutEffect, useRef } from 'react';
+
 import classNames from 'classnames';
 
+import { useBreakpoint } from '@/mastodon/features/ui/hooks/useBreakpoint';
+import { useMergedRefs } from '@/mastodon/hooks/useMergedRefs';
 import type { PolymorphicProps } from '@/types/polymorphic';
 
+import { BottomSheet } from '../bottom_sheet';
 import { Popover } from '../popover';
 import type { PopoverProps } from '../popover';
+import { Portal } from '../popover/portal';
 
 import classes from './styles.module.scss';
 
@@ -12,8 +18,10 @@ export type MenuCardProps<As extends React.ElementType> = PolymorphicProps<
     children: React.ReactNode;
     className?: string;
     elevation?: 1 | 2;
+    minWidth?: number | string;
     maxWidth?: number | string;
     style?: React.CSSProperties;
+    popover?: React.HTMLAttributes<As>['popover'];
   },
   As
 >;
@@ -23,20 +31,41 @@ export const MenuCard = <As extends React.ElementType = 'div'>({
   children,
   className,
   elevation = 1,
+  minWidth,
   maxWidth,
   style,
+  // By default, `MenuCard` opens itself on the top layer using the
+  // native popover API. Set this prop to `undefined` to disable this.
+  popover = 'manual',
   ...props
 }: MenuCardProps<As>) => {
   const Component = asComp ?? 'div';
+  const cardRef = useRef<HTMLDivElement>(null);
+
+  useLayoutEffect(() => {
+    const card = cardRef.current;
+    if (popover !== 'manual' || !card || !isPopoverAPISupported()) return;
+
+    card.showPopover();
+
+    return () => {
+      card.hidePopover();
+    };
+  }, [popover]);
+
   return (
     <Component
       {...props}
+      ref={useMergedRefs(props.ref, cardRef)}
+      popover={popover}
       className={classNames(className, classes.card)}
       data-elevation={elevation}
       style={
         {
           '--_max-card-width':
             typeof maxWidth === 'number' ? `${maxWidth}px` : maxWidth,
+          '--_min-card-width':
+            typeof minWidth === 'number' ? `${minWidth}px` : minWidth,
           ...style,
         } as React.CSSProperties
       }
@@ -45,6 +74,10 @@ export const MenuCard = <As extends React.ElementType = 'div'>({
     </Component>
   );
 };
+
+function isPopoverAPISupported() {
+  return 'popover' in HTMLElement.prototype;
+}
 
 export type PopoverMenuCardProps<As extends React.ElementType> =
   MenuCardProps<As> & Omit<PopoverProps, 'children'>;
@@ -65,6 +98,18 @@ export const PopoverMenuCard = <As extends React.ElementType>({
   className,
   ...props
 }: PopoverMenuCardProps<As>) => {
+  const isMobile = useBreakpoint('openable');
+
+  if (isMobile && isOpen) {
+    return (
+      <Portal container={container}>
+        <BottomSheet {...props} onClose={onClose}>
+          {children}
+        </BottomSheet>
+      </Portal>
+    );
+  }
+
   return (
     <Popover
       isOpen={isOpen}
@@ -85,10 +130,10 @@ export const PopoverMenuCard = <As extends React.ElementType>({
           {...(props as React.ComponentPropsWithoutRef<As>)}
           className={classNames(
             className,
-            props.maxWidth && classes.popoverCard,
+            props.maxWidth && classes.fullWidthCard,
           )}
         >
-          {children}
+          <div className={classes.scrollableInnerCard}>{children}</div>
         </MenuCard>
       )}
     </Popover>

@@ -13,14 +13,15 @@ import {
   statusFactoryImmutable,
 } from '@/testing/factories';
 
-import { StatusRedesign } from './status';
+import { Status } from '.';
 import type { AttachmentArgs } from './testing';
 import { attachmentArgTypes, attachmentFactory } from './testing';
-import type { StatusContextType } from './types';
+import type { StatusContextType, StatusVariant } from './types';
 
 interface StatusStoryProps extends AttachmentArgs {
   // Contents
   text: string;
+  tags: string;
   visibility: StatusVisibility;
   isReblog?: boolean;
   isReply?: boolean;
@@ -41,6 +42,7 @@ interface StatusStoryProps extends AttachmentArgs {
   // Display
   showThread?: boolean;
   contextType?: StatusContextType;
+  variant?: StatusVariant;
   showCounters?: boolean;
   favouriteCount?: number;
   reblogCount?: number;
@@ -66,6 +68,7 @@ const StatusStoryComponent: FC<StatusStoryProps> = (props) => {
     disableActions = false,
 
     contextType,
+    variant,
     showThread,
     showCounters,
     hidden,
@@ -73,13 +76,14 @@ const StatusStoryComponent: FC<StatusStoryProps> = (props) => {
     showPrepend = true,
   } = props;
   return (
-    <StatusRedesign
+    <Status
       {...staticProps}
       id='1'
       accountId={isReblog ? '1' : undefined}
       isQuotedPost={isQuote}
       showActions={!disableActions}
       contextType={contextType}
+      variant={variant}
       withCounters={showCounters}
       // Either we are showing a thread (in a timeline) or it's a full reply chain view.
       showThread={isReply && showThread}
@@ -150,7 +154,7 @@ const categoryDisplay = {
 } as const;
 
 const meta = {
-  title: 'Redesign/Status',
+  title: 'Components/Status',
   component: StatusStoryComponent,
   argTypes: {
     // Contents
@@ -169,6 +173,7 @@ const meta = {
     isPoll: categoryContents,
     isQuote: categoryContents,
     text: categoryContents,
+    tags: categoryContents,
     attachment1: {
       ...categoryContents,
       ...attachmentArgTypes.attachment1,
@@ -199,6 +204,11 @@ const meta = {
     showTranslate: categoryInteraction,
 
     // Display
+    variant: {
+      ...categoryDisplay,
+      control: 'inline-radio',
+      options: ['feed', 'thread', 'page'] satisfies StatusVariant[],
+    },
     showCounters: categoryDisplay,
     favouriteCount: categoryDisplay,
     reblogCount: categoryDisplay,
@@ -232,6 +242,7 @@ const meta = {
   },
   args: {
     text: 'This is a status',
+    tags: '',
     visibility: 'public',
     isReblog: false,
     isReply: false,
@@ -250,6 +261,7 @@ const meta = {
     disableActions: false,
     showTranslate: false,
 
+    variant: 'feed',
     favouriteCount: 0,
     reblogCount: 0,
     replyCount: 0,
@@ -283,7 +295,8 @@ const meta = {
       },
     },
     stateFn({
-      text,
+      text: textBase,
+      tags: tagsStr,
       contentWarning,
       visibility,
       attachment1,
@@ -301,6 +314,28 @@ const meta = {
     }: StatusStoryProps) {
       const account = accountFactoryImmutable();
 
+      const tags = tagsStr
+        .split(',')
+        .map((tagStr) => {
+          const tag = tagStr.trim().replace(/^#/, '');
+          if (!tag) {
+            return null;
+          }
+          return {
+            name: tag,
+            url: `https://example.com/tags/${tag}`,
+          };
+        })
+        .filter((tag) => !!tag);
+
+      let text = textBase.trim();
+      if (tags.length > 0) {
+        const tagText = tags
+          .map((tag) => `<a href="${tag.url}" rel="tag">#${tag.name}</a>`)
+          .join(' ');
+        text += `\n${tagText}`;
+      }
+
       const status = statusFactoryImmutable({
         text,
         spoiler_text: contentWarning,
@@ -310,6 +345,7 @@ const meta = {
           attachment2,
           attachment3,
         ),
+        tags,
         reblogged: hasReblogged,
         favourited: hasFavourited,
         bookmarked: hasBookmarked,

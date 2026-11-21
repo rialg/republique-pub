@@ -9,7 +9,7 @@ import { TrashIcon } from '@phosphor-icons/react';
 
 import type { PolymorphicProps } from '@/types/polymorphic';
 
-import { IconButton } from '../button/redesign';
+import { IconButton } from '../button';
 
 import classes from './styles.module.scss';
 
@@ -19,6 +19,11 @@ type CardProps<As extends React.ElementType> = PolymorphicProps<
     className?: string;
     image?: React.ReactNode;
     onDelete?: React.MouseEventHandler<HTMLButtonElement>;
+    /**
+     * Use if the card is not clickable in its entirety.
+     * Disables hover effect & pointer cursor
+     */
+    unclickable?: boolean;
   },
   As
 >;
@@ -35,6 +40,7 @@ export const Card = <As extends React.ElementType = 'div'>({
   className,
   image,
   onDelete,
+  unclickable,
   ...props
 }: CardProps<As>) => {
   const Comp = asComp ?? 'div';
@@ -53,7 +59,15 @@ export const Card = <As extends React.ElementType = 'div'>({
     );
 
   return (
-    <Comp {...props} className={classNames(className, classes.root)}>
+    <Comp
+      {...props}
+      className={classNames(
+        className,
+        classes.root,
+        unclickable && classes.rootUnclickable,
+      )}
+      data-interactive-post-content='true'
+    >
       <CardContext.Provider value={{ id }}>{children}</CardContext.Provider>
 
       {imageComp}
@@ -103,28 +117,74 @@ export const CardTitle: React.FC<
   );
 };
 
-type CardBodyProps<As extends React.ElementType> = PolymorphicProps<
+interface CardBodyProps {
+  children: React.ReactNode;
+  className?: string;
+  isDescription?: boolean;
+  noClamp?: boolean;
+}
+
+export const CardBody = ({
+  children,
+  className,
+  isDescription,
+  noClamp,
+  ...props
+}: CardBodyProps & React.ComponentPropsWithRef<'div'>) => {
+  return (
+    <div
+      {...props}
+      className={classNames(
+        className,
+        classes.body,
+        !noClamp && classes.clamp,
+        isDescription && classes.description,
+      )}
+    >
+      {children}
+    </div>
+  );
+};
+
+type PrimaryCardLinkProps<As extends React.ElementType> = PolymorphicProps<
   {
-    children: React.ReactNode;
+    children?: React.ReactNode;
     className?: string;
-    noClamp?: boolean;
   },
   As
 >;
 
-export const CardBody = <As extends React.ElementType>({
+export const PrimaryCardLink = <As extends React.ElementType = 'a'>({
   as: asComp,
   children,
   className,
-  noClamp,
   ...props
-}: CardBodyProps<As>) => {
+}: PrimaryCardLinkProps<As>) => {
+  const Comp = asComp ?? 'a';
+  return (
+    <Comp {...props} className={classNames(className, classes.primaryCardLink)}>
+      {children}
+    </Comp>
+  );
+};
+
+type CardActionProps<As extends React.ElementType> = PolymorphicProps<
+  {
+    children: React.ReactNode;
+    className?: string;
+  },
+  As
+>;
+
+export const CardActions = <As extends React.ElementType = 'div'>({
+  as: asComp,
+  children,
+  className,
+  ...props
+}: CardActionProps<As>) => {
   const Comp = asComp ?? 'div';
   return (
-    <Comp
-      {...props}
-      className={classNames(className, classes.body, !noClamp && classes.clamp)}
-    >
+    <Comp {...props} className={classNames(className, classes.actions)}>
       {children}
     </Comp>
   );

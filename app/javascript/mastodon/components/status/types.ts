@@ -1,14 +1,10 @@
-import type { ComponentType, ReactNode } from 'react';
-
-import StatusContainer from '@/mastodon/containers/status_container';
+import type {
+  ApiGifvAttachmentJSON,
+  ApiImageAttachmentJSON,
+  ApiVideoAttachmentJSON,
+} from '@/mastodon/api_types/media_attachments';
 import type { Account as TAccount } from '@/mastodon/models/account';
 import type { Status as TStatus } from '@/mastodon/models/status';
-import { isRedesignEnabled } from '@/mastodon/utils/environment';
-
-import Status from '../status';
-
-import type { StatusHeaderRenderFn } from './header';
-import { StatusRedesign } from './status';
 
 export type StatusContextType =
   | 'account'
@@ -23,10 +19,12 @@ export type StatusContextType =
   | 'search'
   | 'thread';
 
+export type StatusVariant = 'feed' | 'thread' | 'page';
+
 export interface StatusContainerProps {
   id?: string | null;
   account?: TAccount;
-  children?: ReactNode;
+  children?: React.ReactNode;
   rootId?: string;
   previousId?: string;
   nextId?: string;
@@ -42,7 +40,6 @@ export interface StatusContainerProps {
   contextType?: StatusContextType;
   withCounters?: boolean;
   unfocusable?: boolean;
-  headerRenderFn?: StatusHeaderRenderFn;
   getScrollPosition?: () => null | { height: number; top: number };
   updateScrollBottom?: (snapshot: number) => void;
   cacheMediaWidth?: (width: number) => void;
@@ -52,10 +49,6 @@ export interface StatusContainerProps {
   avatarSize?: number;
   withDismiss?: boolean;
 }
-
-export const TypedStatusContainer = isRedesignEnabled()
-  ? StatusRedesign
-  : (StatusContainer as ComponentType<StatusContainerProps>);
 
 // Taken from the Status component.
 export interface StatusProps extends Omit<StatusContainerProps, 'nextId'> {
@@ -97,4 +90,7 @@ export interface StatusProps extends Omit<StatusContainerProps, 'nextId'> {
   pictureInPicture: Immutable.Map<'inUse' | 'available', boolean>;
 }
 
-export const TypedStatus = Status as ComponentType<StatusProps>;
+export type StatusImageAttachmentJSON =
+  | ApiImageAttachmentJSON
+  | ApiGifvAttachmentJSON
+  | ApiVideoAttachmentJSON;
