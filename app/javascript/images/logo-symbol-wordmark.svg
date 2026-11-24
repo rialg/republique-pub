@@ -1,6 +1,6 @@
 <svg width="356" height="66" viewBox="0 0 356 66" fill="none" xmlns="http://www.w3.org/2000/svg">
   <!-- Icon -->
-  <rect width="66" height="66" rx="12" fill="url(#paint0_linear)"/>
+  <rect width="66" height="66" rx="12" fill="url(#logo-symbol-wordmark-gradient)"/>
   <path d="M18 14H38C42.4183 14 46 17.5817 46 22V24.5C46 28.9183 42.4183 32.5 38 32.5H30L42 50H33L23 38V50H18V14ZM26 26H36C37.3807 26 38.5 24.8807 38.5 23.5C38.5 22.1193 37.3807 21 36 21H26V26Z" fill="#FFCC00"/>
   
   <!-- Wordmark: REPUBLIQUE -->
@@ -28,7 +28,7 @@
   </g>
   
   <defs>
-    <linearGradient id="paint0_linear" x1="33" y1="0" x2="33" y2="66" gradientUnits="userSpaceOnUse">
+    <linearGradient id="logo-symbol-wordmark-gradient" x1="33" y1="0" x2="33" y2="66" gradientUnits="userSpaceOnUse">
       <stop stop-color="#003399"/>
       <stop offset="1" stop-color="#002266"/>
     </linearGradient>

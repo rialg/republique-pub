@@ -1,8 +1,8 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="79" height="79" viewBox="0 0 79 79">
-  <rect width="79" height="79" rx="14" fill="url(#paint0_linear)"/>
+  <rect width="79" height="79" rx="14" fill="url(#logo-symbol-icon-gradient)"/>
   <path d="M22 18H46C51.5228 18 56 22.4772 56 28V31C56 36.5228 51.5228 41 46 41H36L52 61H40L27 44V61H22V18ZM32 33H44C45.6569 33 47 31.6569 47 30C47 28.3431 45.6569 27 44 27H32V33Z" fill="#FFCC00"/>
   <defs>
-    <linearGradient id="paint0_linear" x1="39.5" y1="0" x2="39.5" y2="79" gradientUnits="userSpaceOnUse">
+    <linearGradient id="logo-symbol-icon-gradient" x1="39.5" y1="0" x2="39.5" y2="79" gradientUnits="userSpaceOnUse">
       <stop stop-color="#003399"/>
       <stop offset="1" stop-color="#002266"/>
     </linearGradient>
